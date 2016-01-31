@@ -1,0 +1,21 @@
+#! /usr/bin/python
+
+import sys
+import os
+
+if __name__ == '__main__': 
+    
+    for dangerousOption in ('/', '/*', '~', '~/', '~/*', '*', '-rf', 'sudo'):
+        if dangerousOption in sys.argv or len(sys.argv) > 4:
+            
+            print('You are going to execute\n' + ' '.join(sys.argv))
+            print('Are you sure to continue ? [N/y]')
+
+            if sys.stdin.readline().strip().lower() != 'y':
+                print('Aborted.')
+                sys.exit(1)
+
+    if sys.argv[0] == 'sudo':
+        os.system('sudo rm.bin ' + ' '.join(sys.argv[2:]))
+    else:
+        os.system('rm.bin ' + ' '.join(sys.argv[1:]))
