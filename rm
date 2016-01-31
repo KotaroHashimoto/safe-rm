@@ -5,8 +5,11 @@ import os
 
 if __name__ == '__main__': 
     
-    for dangerousOption in ('/', '/*', '~', '~/', '~/*', '*', '-rf', 'sudo'):
-        if dangerousOption in sys.argv or len(sys.argv) > 4:
+    for dangerousOption in ('/', '/*', '~', '~/', '~/*', '*', \
+                                'usr', 'bin', 'etc', 'var', 'home', 'dev', 'sbin', \
+                                'Documents', 'Downloads', 'Desktop', 'Pictures', 'Music', \
+                                '-rf', 'sudo'):
+        if dangerousOption in sys.argv:
             
             print('You are going to execute\n' + ' '.join(sys.argv))
             print('Are you sure to continue ? [N/y]')
