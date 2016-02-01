@@ -1,24 +1,30 @@
-#! /usr/bin/python
+#!/usr/bin/env python
 
 import sys
 import os
 
-if __name__ == '__main__': 
-    
-    for dangerousOption in ('/', '/*', '~', '~/', '~/*', '*', \
-                                'usr', 'bin', 'etc', 'var', 'home', 'dev', 'sbin', \
-                                'Documents', 'Downloads', 'Desktop', 'Pictures', 'Music', \
-                                '-rf', 'sudo'):
-        if dangerousOption in sys.argv:
-            
-            print('You are going to execute\n' + ' '.join(sys.argv))
-            print('Are you sure to continue ? [N/y]')
+if __name__ == '__main__':
 
-            if sys.stdin.readline().strip().lower() != 'y':
-                print('Aborted.')
-                sys.exit(1)
+    print sys.argv
+
+    for dangerousOption in ('usr', 'bin', 'etc', 'var', 'home', 'dev', 'sbin', 'boot', 'lib', 'opt', 'proc', 'root', 'sys', 'run', 'mnt', \
+                            'Documents', 'Downloads', 'Desktop', 'Pictures', 'Music', 'Public', 'Videos'\
+                            '-rf', 'sudo'):
+        for givenOption in sys.argv:
+            if dangerousOption in givenOption or '/' == givenOption:
+                print givenOption
+                print dangerousOption
+
+
+                print('You are going to execute:\n' + ' '.join(sys.argv))
+                print('Are you sure to continue ? [N/y]')
+
+                if sys.stdin.readline().strip().lower() != 'y':
+                    print('Aborted.')
+                    sys.exit(1)
+
 
     if sys.argv[0] == 'sudo':
-        os.system('sudo rm.bin ' + ' '.join(sys.argv[2:]))
+        os.system('sudo rm.org ' + ' '.join(sys.argv[2:]))
     else:
-        os.system('rm.bin ' + ' '.join(sys.argv[1:]))
+        os.system('rm.org ' + ' '.join(sys.argv[1:]))
