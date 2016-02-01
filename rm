@@ -20,6 +20,8 @@ def reconfirm():
         print('\033[1;93mOperation aborted.\033[m')
         sys.exit(1)
 
+    return True
+
 
 def isRoot():
     return subprocess.Popen(['whoami'], stdout=subprocess.PIPE).communicate()[0].strip() == 'root'
@@ -34,19 +36,25 @@ def getHome():
     return 'home'
 
 
-if __name__ == '__main__':
+def determineCommandLine():
 
     if isRoot():
         reconfirm()
 
-    for givenOption in sys.argv:
+    for givenOption in sys.argv[1:]:
         if '/' == givenOption or '.' == givenOption:
-            reconfirm()
+            if reconfirm():
+                return
 
         for dangerousOption in ('usr', 'bin', 'etc', 'var', 'home', 'dev', 'sbin', 'boot', 'lib', 'opt', 'proc', 'root', 'sys', 'run', 'mnt', \
                                 'Documents', 'Downloads', 'Desktop', 'Pictures', 'Music', 'Public', 'Videos', getHome(), \
                                 '-rf', '-fr', '-f', '-r'):
             if dangerousOption in givenOption:
-                reconfirm()
+                if reconfirm():
+                    return
 
+
+if __name__ == '__main__':
+
+    determineCommandLine()
     os.system(getCommandLine('rm.org -v'))
