@@ -2,29 +2,51 @@
 
 import sys
 import os
+import subprocess
+
+
+def getCommandLine(rm):
+    rm += ' '
+    return ('sudo ' if isRoot() else '') + rm + ' '.join(sys.argv[1:])
+
+
+def reconfirm():
+
+    print('\033[1;91m[DANGER]\033[1;93m You are going to execute disastrous command! \033[1;91m[DANGER]')
+    print('\033[4;93m$ ' + getCommandLine('rm') + '\033[m')
+    print('\033[1;93mAre you sure to continue? [N/y]\033[m')
+
+    if sys.stdin.readline().strip().lower() != 'y':
+        print('\033[1;93mOperation aborted.\033[m')
+        sys.exit(1)
+
+
+def isRoot():
+    return subprocess.Popen(['whoami'], stdout=subprocess.PIPE).communicate()[0].strip() == 'root'
+
+
+def getHome():
+    stdout = subprocess.Popen(['env'], stdout=subprocess.PIPE).communicate()[0].split('\n')
+    for line in stdout:
+        if line.startswith('HOME'):
+            return line.split('/')[-1]
+
+    return 'home'
+
 
 if __name__ == '__main__':
 
-    print sys.argv
+    if isRoot():
+        reconfirm()
 
-    for dangerousOption in ('usr', 'bin', 'etc', 'var', 'home', 'dev', 'sbin', 'boot', 'lib', 'opt', 'proc', 'root', 'sys', 'run', 'mnt', \
-                            'Documents', 'Downloads', 'Desktop', 'Pictures', 'Music', 'Public', 'Videos'\
-                            '-rf', 'sudo'):
-        for givenOption in sys.argv:
-            if dangerousOption in givenOption or '/' == givenOption:
-                print givenOption
-                print dangerousOption
+    for givenOption in sys.argv:
+        if '/' == givenOption or '.' == givenOption:
+            reconfirm()
 
+        for dangerousOption in ('usr', 'bin', 'etc', 'var', 'home', 'dev', 'sbin', 'boot', 'lib', 'opt', 'proc', 'root', 'sys', 'run', 'mnt', \
+                                'Documents', 'Downloads', 'Desktop', 'Pictures', 'Music', 'Public', 'Videos', getHome(), \
+                                '-rf', '-fr', '-f', '-r'):
+            if dangerousOption in givenOption:
+                reconfirm()
 
-                print('You are going to execute:\n' + ' '.join(sys.argv))
-                print('Are you sure to continue ? [N/y]')
-
-                if sys.stdin.readline().strip().lower() != 'y':
-                    print('Aborted.')
-                    sys.exit(1)
-
-
-    if sys.argv[0] == 'sudo':
-        os.system('sudo rm.org ' + ' '.join(sys.argv[2:]))
-    else:
-        os.system('rm.org ' + ' '.join(sys.argv[1:]))
+    os.system(getCommandLine('rm.org -v'))
