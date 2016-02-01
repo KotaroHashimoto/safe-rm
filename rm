@@ -28,8 +28,7 @@ def isRoot():
 
 
 def getHome():
-    stdout = subprocess.Popen(['env'], stdout=subprocess.PIPE).communicate()[0].split('\n')
-    for line in stdout:
+    for line in subprocess.Popen(['env'], stdout=subprocess.PIPE).communicate()[0].split('\n'):
         if line.startswith('HOME'):
             return line.split('/')[-1]
 
@@ -39,7 +38,10 @@ def getHome():
 def determineCommandLine():
 
     if isRoot():
-        reconfirm()
+        if reconfirm():
+            return
+
+    home = getHome()
 
     for givenOption in sys.argv[1:]:
         if '/' == givenOption or '.' == givenOption:
@@ -47,7 +49,7 @@ def determineCommandLine():
                 return
 
         for dangerousOption in ('usr', 'bin', 'etc', 'var', 'home', 'dev', 'sbin', 'boot', 'lib', 'opt', 'proc', 'root', 'sys', 'run', 'mnt', \
-                                'Documents', 'Downloads', 'Desktop', 'Pictures', 'Music', 'Public', 'Videos', getHome(), \
+                                'Documents', 'Downloads', 'Desktop', 'Pictures', 'Music', 'Public', 'Videos', home, \
                                 '-rf', '-fr', '-f', '-r'):
             if dangerousOption in givenOption:
                 if reconfirm():
