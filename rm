@@ -37,11 +37,14 @@ def getHome():
 
 def determineCommandLine():
 
+    home = getHome()
+
+    if '/home/' + home + '/.keychain/' in sys.argv[2]:
+        return
+
     if isRoot():
         if reconfirm():
             return
-
-    home = getHome()
 
     for givenOption in sys.argv[1:]:
         if '/' == givenOption or '.' == givenOption:
@@ -59,4 +62,4 @@ def determineCommandLine():
 if __name__ == '__main__':
 
     determineCommandLine()
-    os.system(getCommandLine('rm.org -v'))
+    os.system(getCommandLine('rm.org'))
